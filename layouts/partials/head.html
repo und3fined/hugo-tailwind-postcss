@@ -1,0 +1,10 @@
+{{ $fonts := resources.Get "scss/fonts.scss" }}
+{{ warnf "fonts %s -> %s" $fonts.RelPermalink $fonts.MediaType }}
+{{ $base := resources.Get "scss/main.scss" | postCSS }}
+{{ warnf "base %s -> %s"  $base.RelPermalink $base.MediaType }}
+{{ $styles := slice $fonts $base | resources.Concat "styles/main.css" }}
+{{ warnf "styles %s -> %s" $styles.RelPermalink $styles.MediaType }}
+{{ if hugo.IsProduction }}
+{{ $styles = $styles | fingerprint "md5" | resources.PostProcess }}
+{{ end }}
+<link rel="stylesheet" type="text/css" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}"/>
